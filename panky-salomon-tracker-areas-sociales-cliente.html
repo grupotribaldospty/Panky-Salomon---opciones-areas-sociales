@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Tracker — Áreas Sociales · Panky Salomón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bay:#1b3a5c; --bay-deep:#0d1f33; --sand:#f2f4f7; --sand-card:#ffffff;
+    --ink:#1a2430; --muted:#6b7686; --line:#dde2e9;
+    --green:#2f7d4f; --green-bg:#e3f1e6; --amber:#9a6a16; --amber-bg:#fbf0d7;
+    --red:#a33636; --red-bg:#f7e1de; --slate:#3a5566; --slate-bg:#e2ebf0;
+    --shadow:0 1px 2px rgba(13,31,51,.06),0 6px 24px rgba(13,31,51,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--sand);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--bay);text-underline-offset:2px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(135deg,#20477a 0%,#0d1f33 100%);color:#fdfbf5;padding:20px 0 30px}
+  .header-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .header-brand svg{height:44px;width:auto}
+  .header-inner{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  .header-left{flex:1;min-width:260px}
+  .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.8;font-weight:500}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(24px,3.5vw,34px);line-height:1.05;margin:4px 0 0}
+  .stats{display:flex;gap:22px}
+  .stat{text-align:center}
+  .stat .n{font-family:'Fraunces',serif;font-size:24px;line-height:1}
+  .stat .l{font-size:10.5px;opacity:.78;letter-spacing:.03em;margin-top:2px;white-space:nowrap}
+  .note-box{background:#fbf4e4;border:1px solid #ecdcb5;border-radius:12px;padding:14px 16px;margin:18px auto 0;font-size:13px;color:#5a4a22;line-height:1.55}
+  .note-box b{color:var(--amber)}
+  .controls{background:var(--sand-card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px;margin:16px auto 22px}
+  .controls-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  .controls-row + .controls-row{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .field{display:flex;flex-direction:column;gap:4px;flex:1 1 150px;min-width:130px}
+  .field label{font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  select,input[type=search]{font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  select:focus,input:focus{outline:2px solid var(--bay);outline-offset:1px}
+  .clear{font:inherit;font-size:13px;background:none;border:none;color:var(--bay);cursor:pointer;padding:8px;text-decoration:underline;white-space:nowrap}
+  .zone-block{margin-top:8px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin:30px 0 16px}
+  .sec-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:22px}
+  .sec-head .meta{font-size:13px;color:var(--muted);white-space:nowrap}
+  .rule{height:1px;background:var(--line);flex:1}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  .card{background:var(--sand-card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .15s ease,box-shadow .15s ease}
+  .card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(18,40,38,.12)}
+  .thumb{height:170px;background:#dfe6e2 center/cover no-repeat;position:relative}
+  .verdict-tag{position:absolute;top:10px;left:10px;font-size:11.5px;font-weight:700;letter-spacing:.02em;padding:5px 12px;border-radius:99px;color:#fff}
+  .v-great{background:var(--green)} .v-solid{background:var(--bay)} .v-fair{background:var(--amber)} .v-stretch{background:var(--slate)}
+  .fav-btn{position:absolute;top:10px;right:10px;background:rgba(255,253,248,.95);border:none;border-radius:99px;min-width:34px;height:34px;padding:0 10px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:var(--shadow);color:#c2456b;display:flex;align-items:center;justify-content:center;gap:4px}
+  .fav-btn.on{background:#c2456b;color:#fff}
+  .source-tag{position:absolute;bottom:10px;right:10px;background:rgba(255,253,248,.92);border-radius:99px;padding:3px 10px;font-size:10.5px;font-weight:600;color:var(--muted)}
+  .card-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .card h3{font-family:'Fraunces',serif;font-weight:500;font-size:18px;line-height:1.2}
+  .area{font-size:13px;color:var(--muted)}
+  .price{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--bay-deep)}
+  .ppm{font-size:11.5px;color:var(--muted);margin-left:6px}
+  .facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;padding:8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .facts b{font-weight:600}
+  .desc{font-size:12.5px;color:var(--ink);line-height:1.55}
+  .desc.clamped{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .desc-toggle{font:inherit;font-size:12px;font-weight:600;background:none;border:none;color:var(--bay);cursor:pointer;padding:0;text-align:left}
+  .considerations{background:#fbf4e4;border:1px solid #ecdcb5;border-radius:9px;padding:9px 11px;font-size:12.5px;color:#5a4a22}
+  .considerations b{display:block;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+  .considerations ul{margin:0 0 0 16px}
+  .considerations li{margin:2px 0}
+  .social{background:var(--slate-bg);border:1px solid #c7d5dc;border-radius:9px;padding:9px 11px;font-size:12.5px;color:#233f4d}
+  .social b{display:block;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--slate);margin-bottom:4px}
+  .maint{font-size:12px;color:var(--muted)}
+  .agent-badge{font-size:11.5px;color:var(--bay-deep);font-weight:600;background:var(--sand);border-radius:7px;padding:5px 9px;display:inline-block}
+  .card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:11px;border-top:1px solid var(--line)}
+  .ref-badge{font-size:12px;font-weight:600;color:var(--muted)!important;background:var(--sand);border:1px solid var(--line);border-radius:7px;padding:5px 10px;text-decoration:none!important}
+  .updated{font-size:11.5px;color:var(--muted)}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;padding:34px 20px 16px;line-height:1.7}
+  .brand-footer{max-width:640px;margin:26px auto 0;padding-top:22px;border-top:1px solid var(--line);text-align:center}
+  .brand-name{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--bay-deep);letter-spacing:.01em}
+  .brand-tag{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.6;max-width:520px;margin-left:auto;margin-right:auto}
+  .brand-foot-small{font-size:11px;color:var(--muted);opacity:.75;margin-top:14px}
+  .empty{background:var(--sand-card);border:1px dashed var(--line);border-radius:14px;padding:38px 24px;text-align:center;color:var(--muted)}
+  @media(max-width:640px){.controls{padding:12px}}
+
+  .photos-btn{position:absolute;bottom:10px;left:10px;background:rgba(13,31,51,.72);color:#fff;border:none;border-radius:99px;padding:5px 11px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px}
+  .photos-btn:hover{background:rgba(13,31,51,.9)}
+  .lightbox{position:fixed;inset:0;background:rgba(10,16,24,.92);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px}
+  .lightbox[hidden]{display:none}
+  .lightbox-inner{max-width:min(920px,92vw);width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .lightbox-imgwrap{position:relative;width:100%;display:flex;align-items:center;justify-content:center}
+  .lightbox img{max-width:100%;max-height:72vh;border-radius:10px;object-fit:contain;background:#0d1f33;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  .lightbox-nav{background:rgba(255,253,248,.14);border:1px solid rgba(255,253,248,.3);color:#fdfbf5;width:42px;height:42px;border-radius:99px;font-size:20px;cursor:pointer;flex-shrink:0}
+  .lightbox-nav:hover{background:rgba(255,253,248,.28)}
+  .lightbox-navrow{display:flex;align-items:center;gap:14px;width:100%;justify-content:center}
+  .lightbox-close{position:absolute;top:-6px;right:-6px;background:#fdfbf5;color:var(--bay-deep);border:none;width:34px;height:34px;border-radius:99px;font-size:18px;font-weight:700;cursor:pointer}
+  .lightbox-meta{color:#fdfbf5;font-size:13px;text-align:center;opacity:.85}
+  .lightbox-meta b{font-weight:700}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="header-brand">
+      <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grupo Tribaldos Realtors">
+        <text x="130" y="108" font-family="Georgia,'Times New Roman',serif" font-size="42" font-weight="700" fill="#fdfbf5">Grupo</text>
+        <text x="85" y="185" font-family="Arial,Helvetica,sans-serif" font-size="92" font-weight="800" letter-spacing="-1" fill="#fdfbf5">TRIBALDOS</text>
+        <text x="618" y="140" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#fdfbf5">®</text>
+        <text x="428" y="232" font-family="Georgia,'Times New Roman',serif" font-size="46" font-weight="700" fill="#fdfbf5">Realtors</text>
+        <path d="M348 15c-20 0-36 16-36 36 0 27 36 68 36 68s36-41 36-68c0-20-16-36-36-36z" fill="#c0392b"/>
+        <circle cx="348" cy="51" r="19" fill="#6e2233"/>
+      </svg>
+    </div>
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="eyebrow">Ciudad de Panamá · Cliente: Panky Salomón · Asesor: Nicholas Wolf</div>
+        <h1>Property Tracker — Áreas Sociales</h1>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="note-box">
+    <b>Nota:</b> este tracker es distinto al principal — aquí el criterio no es el tamaño, sino el área social. Son apartamentos más compactos (90–128 m²), de 2 a 3 recámaras, en Coco del Mar, San Francisco y Punta Pacífica, pero cada uno destaca por una distribución inteligente y un paquete de amenidades excepcional: piscinas de borde infinito, spa, sala de cine, coworking, canchas deportivas, sky gym, entre otros. La lógica es simple: si el área social es un factor importante para el cliente, estas opciones valen la pena verlas aunque el metraje sea menor que en el tracker principal — la calidad de vida dentro del edificio compensa el tamaño del apartamento. La mayoría está entre $210K y $400K; Victory Sport ($499,000) se incluye como opción aspiracional/stretch por tener el paquete deportivo más completo del mercado, muy por encima del presupuesto de referencia. Todas las propiedades fueron verificadas individualmente el 25/09/2026: el anuncio abre correctamente, el link funciona y la información está actualizada.
+  </div>
+
+  <div class="controls">
+    <div class="controls-row">
+      <div class="field"><label>Buscar</label>
+        <input type="search" id="f-search" placeholder="Apartamento, zona...">
+      </div>
+      <div class="field"><label>Zona</label>
+        <select id="f-area"><option value="">Todas</option></select>
+      </div>
+      <div class="field"><label>Precio</label>
+        <select id="f-price">
+          <option value="">Cualquiera</option>
+          <option value="0-250000">Hasta $250K</option>
+          <option value="250000-350000">$250K–$350K</option>
+          <option value="350000-400000">$350K–$400K</option>
+          <option value="400000-999999">$400K en adelante</option>
+        </select>
+      </div>
+      <div class="field"><label>Recámaras</label>
+        <select id="f-beds"><option value="">Cualquiera</option><option value="2">2+</option><option value="3">3+</option></select>
+      </div>
+      <div class="field"><label>Veredicto</label>
+        <select id="f-verdict">
+          <option value="">Cualquiera</option>
+          <option value="Great Find">Great Find</option>
+          <option value="Solid Option">Solid Option</option>
+          <option value="Fair">Fair</option>
+          <option value="Stretch">Stretch</option>
+        </select>
+      </div>
+      <div class="field"><label>Edificio</label>
+        <select id="f-building"><option value="">Cualquiera</option></select>
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="field"><label>Mostrar</label>
+        <select id="f-show"><option value="all">Todo</option><option value="loved">Solo con favoritos</option></select>
+      </div>
+      <div class="field"><label>Ordenar por</label>
+        <select id="f-sort">
+          <option value="price-asc">Precio (menor a mayor)</option>
+          <option value="price-desc">Precio (mayor a menor)</option>
+          <option value="size-desc">Tamaño (mayor a menor)</option>
+          <option value="name-asc">Nombre (A-Z)</option>
+        </select>
+      </div>
+      <button class="clear" id="clear">Limpiar filtros</button>
+    </div>
+  </div>
+
+  <div id="zones"></div>
+  <div class="empty" id="empty" hidden><b>Sin resultados</b>Prueba ajustando los filtros.</div>
+</div>
+
+<footer>
+  Datos tomados de listados públicos activos en los portales inmobiliarios, verificados el 25/09/2026 · Los precios y disponibilidad pueden cambiar — verifica siempre en el link original antes de contactar.<br>
+  ❤ los favoritos se comparten con todos los que abren este link.
+
+  <div class="brand-footer">
+    <div class="brand-name">Grupo Tribaldos</div>
+    <div class="brand-tag">Este tracker es un sistema de filtrado sobre todo el inventario disponible en el mercado: revisamos, verificamos y comparamos las opciones activas para que el cliente pueda enfocarse solo en las que realmente valen la pena, en vez de buscar anuncio por anuncio.</div>
+    <div class="brand-foot-small">Preparado para Panky Salomón · Asesor Nicholas Wolf</div>
+  </div>
+</footer>
+
+<script>
+const SUPABASE_URL = "https://saqtricsftsfwxrpkewx.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhcXRyaWNzZnRzZnd4cnBrZXd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDU0MTEsImV4cCI6MjA5OTYyMTQxMX0.q2qvhqrbS24qKiLNTj92eTtNYmhz_Y7gZXgjucAJkXU";
+
+// Prefijo único para este cliente/tracker para que sus favoritos no se mezclen
+// con los de otros trackers que comparten la misma tabla de Supabase.
+const CLIENT_PREFIX = "salomon-social-";
+
+// Orden de las zonas tal como se presentan.
+const ZONE_ORDER = ["Coco del Mar", "San Francisco", "Punta Pacífica"];
+
+const PROPERTIES = [
+  {
+    "id": "salomon-social-ph-quartier-del-mar",
+    "building": "PH Quartier del Mar",
+    "area": "Coco del Mar",
+    "price": 250000,
+    "beds": 2,
+    "baths": 2,
+    "parking": 2,
+    "size_m2": 120,
+    "maintenance": null,
+    "verdict": "Great Find",
+    "socialAreas": "Piscina con área de descanso, gimnasio completamente equipado, salón de eventos para reuniones privadas o sociales, elegante lobby de acceso, planta eléctrica total, seguridad 24/7",
+    "description": "Apartamento amoblado de 120 m² en Coco del Mar, piso 9, con 2 recámaras, 2 baños completos, 2 estacionamientos y balcón con vista panorámica a la ciudad. Totalmente amoblado con mobiliario de alta gama. El edificio tiene un paquete de área social sólido: piscina, gimnasio completo y salón de eventos, ideal para quien prioriza espacios comunes sin necesitar un apartamento enorme.",
+    "considerations": [
+      "120 m² — compacto pero con distribución eficiente de 2 recámaras",
+      "Totalmente amoblado, listo para mudarse o rentar",
+      "Actualizado el 25/09/2026, el más reciente del grupo",
+      "19 fotos disponibles — muy bien documentado"
+    ],
+    "thumbnail": "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-797bc1b",
+    "photos": [
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-797bc1b",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-5a1aa2c",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-061d046",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-5b2a829",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-3bc88f0",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-be9f49c",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-6526873",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-bfff92b",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-72b1b6d",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-cba94c6",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-0cf6e94",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-13b2c20",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-2566393",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-345757a",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-7c3e3b5",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-1bde557",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-ec14bb2",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-c8013b8",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/31/96/53/91/31965391_477da1dd93c9cb0cdb21dfa707ae539b-12c6777"
+    ],
+    "listingUrl": "https://www.encuentra24.com/panama-es/bienes-raices-venta-de-propiedades-apartamentos/vendo-apartamento-amoblado-ph-quartier-del-mar-coco-del-mar-3/31965391",
+    "source": "Portal inmobiliario",
+    "lastVerified": "2026-09-25"
+  },
+  {
+    "id": "salomon-social-next-coco-del-mar-reventa",
+    "building": "PH NEXT Coco del Mar (reventa)",
+    "area": "Coco del Mar",
+    "price": 320000,
+    "beds": 2,
+    "baths": 2,
+    "parking": 2,
+    "size_m2": 90,
+    "maintenance": 220,
+    "verdict": "Solid Option",
+    "socialAreas": "Piscina para adultos y niños, cancha de pádel climatizada, fitness club, cheers lounge, kidz club, baby room, pets park, coworking, salón de fiestas panorámico, sala de cine, huerto, outdoor kitchen, delivery room",
+    "description": "Oportunidad de reventa en PH NEXT, uno de los proyectos más modernos de Coco del Mar, en la esquina de Vía Cincuentenario y Calle 79 Este. 90 m², 2 recámaras, 2 baños, distribución moderna y funcional. El edificio tiene uno de los paquetes de amenidades más completos de toda la zona — pensado para un estilo de vida social activo.",
+    "considerations": [
+      "90 m² — el más compacto del grupo, pero con el paquete de amenidades más extenso",
+      "Precio de oportunidad -3% frente al listado original",
+      "Mantenimiento $220/mes",
+      "Actualizado recientemente — verificar disponibilidad de reventa"
+    ],
+    "thumbnail": "https://photos.encuentra24.com/t_or_fh_l/f_auto/v1/pa/32/89/11/87/32891187_e6a55979c29bb3279ee602e1f6e25d19-3ca35b1",
+    "photos": [
+      "https://photos.encuentra24.com/t_or_fh_l/f_auto/v1/pa/32/89/11/87/32891187_e6a55979c29bb3279ee602e1f6e25d19-3ca35b1"
+    ],
+    "listingUrl": "https://www.encuentra24.com/panama-es/bienes-raices-venta-de-propiedades-apartamentos/oportunidad-reventa-en-proyecto-next-coco-del-mar/32891187",
+    "source": "Portal inmobiliario",
+    "lastVerified": "2026-09-25"
+  },
+  {
+    "id": "salomon-social-ph-oasis-on-the-bay",
+    "building": "PH Oasis on the Bay",
+    "area": "Punta Pacífica",
+    "price": 268000,
+    "beds": 3,
+    "baths": 2,
+    "parking": 3,
+    "size_m2": 99,
+    "maintenance": 173,
+    "verdict": "Great Find",
+    "socialAreas": "Piscina infinita con vista al océano, gimnasio completo, salón de eventos y áreas comunes de lujo, seguridad de alta tecnología y control de acceso",
+    "description": "Apartamento remodelado de 99 m² en el piso 30 de PH Oasis on the Bay, Punta Pacífica, con vista garantizada al mar. Totalmente remodelado y amueblado con diseño contemporáneo, sistema smart automatizado, 3 estacionamientos y 2 depósitos — muy poco común para este tamaño. Compacto pero con acabados y amenidades de nivel alto.",
+    "considerations": [
+      "99 m² — compacto, pero amueblado y remodelado, listo para entrar a vivir",
+      "3 estacionamientos + 2 depósitos, algo excepcional en un apartamento de este tamaño",
+      "Zona: Punta Pacífica (adyacente a Coco del Mar/San Francisco) — confirmar si aplica para este cliente",
+      "Actualizado el 23/09/2026, piso 30 con vista al mar garantizada"
+    ],
+    "thumbnail": "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_d1774d1",
+    "photos": [
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_d1774d1",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_1157ba4",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_6cf2282",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_7b46ac0",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_4429de0",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_abc78b3",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_32590c2",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_db15101",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_1e5b01c",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_09d2a14",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_87e3bb6",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_7438f21",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_1fba6ef",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_08c7d73",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_98cb8ee",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_7de8ab6",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_185929c",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_5f0909d",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/71/56/90/32715690_be5e793"
+    ],
+    "listingUrl": "https://www.encuentra24.com/panama-es/bienes-raices-venta-de-propiedades-apartamentos/venta-apartamento-oasis-on-the-bay-punta-pacifica/32715690",
+    "source": "Portal inmobiliario",
+    "lastVerified": "2026-09-25"
+  },
+  {
+    "id": "salomon-social-san-francisco-bay-torre-100",
+    "building": "San Francisco Bay Torre 100",
+    "area": "San Francisco",
+    "price": 170500,
+    "beds": 2,
+    "baths": 2,
+    "parking": 2,
+    "size_m2": 114,
+    "maintenance": 204,
+    "verdict": "Great Find",
+    "socialAreas": "Cancha de tenis, golfito, piscina, gimnasio, salón de fiestas, sala de juegos de niños",
+    "description": "Apartamento de 114 m² en el corazón de San Francisco, cerca del Corredor Sur y Multiplaza. 2 recámaras + den (puede convertirse en 3a. recámara), 2 estacionamientos y depósito, se vende amoblado. El edificio tiene un área social poco común para el precio: cancha de tenis, golfito, piscina, gimnasio y salón de fiestas.",
+    "considerations": [
+      "114 m² con den convertible en 3a. recámara — flexible",
+      "El precio más bajo del grupo, con área social muy completa (cancha de tenis + golfito)",
+      "Se vende amoblado, con todo incluido",
+      "Exoneración de impuestos hasta 2028"
+    ],
+    "thumbnail": "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_2884ca",
+    "photos": [
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_2884ca",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_fbe09a",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_feeee0",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_494a48",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_9486e7",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_94d9d3",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_cf16d7",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_a655ea",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_129ca5",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_eb15532",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_537848",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_8dc2d8",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_e67f42",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_4781a5",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_d734a1",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_87ce6c",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_6790af",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_550a7a",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_2f18a6",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/30/75/57/70/30755770_fce14f"
+    ],
+    "listingUrl": "https://www.encuentra24.com/panama-es/bienes-raices-venta-de-propiedades-apartamentos/san-fco-bay-t100-10a-114mts-con-2recs-den-2estac-deposito-storage/30755770",
+    "source": "Portal inmobiliario",
+    "lastVerified": "2026-09-25"
+  },
+  {
+    "id": "salomon-social-ph-bahia-del-golf",
+    "building": "PH Bahía del Golf",
+    "area": "Coco del Mar",
+    "price": 210000,
+    "beds": 2,
+    "baths": 2.5,
+    "parking": 2,
+    "size_m2": 118.02,
+    "maintenance": 210.6,
+    "verdict": "Solid Option",
+    "socialAreas": "Piscina, gimnasio, cancha de pádel, salón de eventos, área social, seguridad 24 horas, estacionamientos para visitantes",
+    "description": "Apartamento de 118 m² en Coco del Mar, para remodelar con precio ajustado. 2 recámaras, 2.5 baños, 2 estacionamientos, se vende con línea blanca. El edificio ofrece un paquete de área social completo: piscina, gimnasio, cancha de pádel y salón de eventos.",
+    "considerations": [
+      "118 m² — para remodelar, precio ajustado, el más económico del grupo",
+      "Cancha de pádel — amenidad poco común en la zona",
+      "Fácil acceso a Costa del Este, San Francisco y el Corredor Sur",
+      "Actualizado el 22/09/2026"
+    ],
+    "thumbnail": "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_0398282",
+    "photos": [
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_0398282",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_70747c8",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_9236419",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_b7d2d25",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_fbc1e03",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_71cbccc",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_0a63d61",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_c3c1d01",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_f06d519",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_af7e5cd",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_379a544",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_906bbbd",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_44df0fa",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_d0c7597",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/47/36/95/32473695_807a019"
+    ],
+    "listingUrl": "https://www.encuentra24.com/panama-es/bienes-raices-venta-de-propiedades-apartamentos/en-venta-coco-del-mar-ph-bahia-del-golf-piso-alto-2-estacionamientos/32473695",
+    "source": "Portal inmobiliario",
+    "lastVerified": "2026-09-25"
+  },
+  {
+    "id": "salomon-social-ph-next-piso-medio",
+    "building": "PH NEXT Coco del Mar (piso medio)",
+    "area": "Coco del Mar",
+    "price": 368000,
+    "beds": 2,
+    "baths": 2,
+    "parking": 2,
+    "size_m2": 90,
+    "maintenance": 220,
+    "verdict": "Great Find",
+    "socialAreas": "Piscina para adultos y niños, cancha de pádel climatizada, fitness club, cheers lounge, kidz club, baby room, pets park, coworking, salón de fiestas panorámico, sala de cine, huerto, outdoor kitchen, delivery room",
+    "description": "Unidad nueva en PH NEXT, piso medio de la torre de 20 niveles, 90 m², 2 recámaras, 2 baños, acabados de primera calidad y excelente iluminación natural. Mismo edificio que la opción de reventa, con el paquete de amenidades más extenso de todo el grupo — piscina, pádel climatizado, sala de cine, coworking, huerto y mucho más.",
+    "considerations": [
+      "90 m² — compacto, pero el edificio con más variedad de área social del grupo",
+      "Precio especial destacado por el vendedor",
+      "Mantenimiento $220/mes",
+      "Actualizado el 23/09/2026"
+    ],
+    "thumbnail": "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/92/98/15/32929815_9ce5e80",
+    "photos": [
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/92/98/15/32929815_9ce5e80",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/92/98/15/32929815_4ac152a",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/92/98/15/32929815_c9e2278",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/92/98/15/32929815_1213dcc",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/92/98/15/32929815_0fa6702",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/92/98/15/32929815_0de0fb0"
+    ],
+    "listingUrl": "https://www.encuentra24.com/panama-es/bienes-raices-venta-de-propiedades-apartamentos/ph-next-coco-del-mar-ph-next-368-2-recamaras-1-2-banos-piso-medio/32929815",
+    "source": "Portal inmobiliario",
+    "lastVerified": "2026-09-25"
+  },
+  {
+    "id": "salomon-social-apartamento-a-estrenar-coco-del-mar",
+    "building": "Apartamento a Estrenar (Coco del Mar)",
+    "area": "Coco del Mar",
+    "price": 395000,
+    "beds": 2,
+    "baths": 2,
+    "parking": 1,
+    "size_m2": 107,
+    "maintenance": 254,
+    "verdict": "Solid Option",
+    "socialAreas": "Piscinas de borde infinito, decks tropicales con zonas de relax, gimnasio de última generación, estudio de yoga, spa con vista al océano, área de cine, área de juego para niños, co-working creativo, zonas de convivencia al aire libre",
+    "description": "Apartamento a estrenar de 107 m² en un desarrollo nuevo de diseño vanguardista en el corazón de Coco del Mar, piso 6, con vistas panorámicas. El corazón del proyecto son sus áreas sociales: piscinas de borde infinito, spa con vista al océano, estudio de yoga, sala de cine y co-working — de los paquetes más completos y modernos de todo el grupo.",
+    "considerations": [
+      "107 m² — distribución abierta, diseño industrial-elegante",
+      "Uno de los paquetes de amenidades más sofisticados (spa, yoga, cine) — justo lo que busca el cliente",
+      "Solo 1 estacionamiento",
+      "Ligeramente por encima de $390K — evaluar si vale la pena por el área social"
+    ],
+    "thumbnail": "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-8cde509",
+    "photos": [
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-8cde509",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-ecd946b",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-272574e",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-d259145",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-8a565dd",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-28b2cdc",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-81f9739",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-883ce5b",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-d890fc6",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/32/40/97/08/32409708_7a571956cdf495d1399177958c07f83c-04b52d2"
+    ],
+    "listingUrl": "https://www.encuentra24.com/panama-es/bienes-raices-venta-de-propiedades-apartamentos/apartamento-a-estrenar-coco-del-mar/32409708",
+    "source": "Portal inmobiliario",
+    "lastVerified": "2026-09-25"
+  },
+  {
+    "id": "salomon-social-victory-sport",
+    "building": "Victory Sport",
+    "area": "Coco del Mar",
+    "price": 499000,
+    "beds": 2,
+    "baths": 2,
+    "parking": 2,
+    "size_m2": 128,
+    "maintenance": 300,
+    "verdict": "Stretch",
+    "socialAreas": "Sky gym, pista de running, cancha multideportiva, canchas de squash, sports lounge, sala de cine, áreas de juegos, múltiples piscinas, sun deck y espacios sociales ajardinados",
+    "description": "Apartamento de 128 m² en Victory Sport, la torre de Coco del Mar reconocida por sus amenidades deportivas y sociales para un estilo de vida activo. 2 recámaras, 2 baños completos, cuarto y baño de servicio, sala-comedor con vistas urbanas. El paquete de amenidades es de los más extensos del mercado — sky gym, pista de running, squash, cine y múltiples piscinas.",
+    "considerations": [
+      "128 m² — el más grande del grupo, con cuarto de servicio incluido",
+      "El paquete de área social más deportivo y completo de todos — ideal si el deporte es parte del estilo de vida",
+      "Precio bien por encima del presupuesto de referencia ($499K) — se incluye como opción aspiracional",
+      "Actualizado el 18/09/2026, incluye video de la propiedad"
+    ],
+    "thumbnail": "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_e368ff5",
+    "photos": [
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_e368ff5",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_fa17df2",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_6876780",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_895717f",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_0f89cea",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_a91de49",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_1e37167",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_504e46c",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_f70acea",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_3a297c8",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_165123f",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_d468ad8",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_6f9c0d2",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_42b5347",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_7361c1f",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_ebf814b",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_2d1af9e",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_c091528",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_2d3c223",
+      "https://photos.encuentra24.com/t_or_fh_m/f_auto/v1/pa/29/28/97/75/29289775_1554afc"
+    ],
+    "listingUrl": "https://www.encuentra24.com/panama-es/bienes-raices-venta-de-propiedades-apartamentos/venta-de-apartamento-en-coco-del-mar-victory-sport/29289775",
+    "source": "Portal inmobiliario",
+    "lastVerified": "2026-09-25"
+  }
+];
+
+const LS_VOTER_KEY = "ptracker_voter_id";
+let voterId = null;
+try{
+  voterId = localStorage.getItem(LS_VOTER_KEY);
+  if(!voterId){ voterId = "v-"+Math.random().toString(36).slice(2,10); localStorage.setItem(LS_VOTER_KEY, voterId); }
+}catch(e){ voterId = "v-"+Math.random().toString(36).slice(2,10); }
+
+let voteCounts = {};
+let myVotes = {};
+
+async function sbFetch(path, opts={}){
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...opts,
+    headers:{
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+      ...(opts.headers||{})
+    }
+  });
+}
+
+async function loadFavorites(){
+  if(!(SUPABASE_URL && SUPABASE_KEY)) return;
+  try{
+    const res = await sbFetch(`favorites?select=property_id,voter&property_id=like.${encodeURIComponent(CLIENT_PREFIX)}*`);
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const rows = await res.json();
+    voteCounts = {}; myVotes = {};
+    rows.forEach(r=>{
+      voteCounts[r.property_id] = (voteCounts[r.property_id]||0)+1;
+      if(r.voter === voterId) myVotes[r.property_id] = true;
+    });
+  }catch(e){ console.warn("No se pudieron cargar los favoritos compartidos:", e); }
+}
+
+async function toggleFav(id){
+  const wasFav = !!myVotes[id];
+  if(wasFav){
+    delete myVotes[id];
+    voteCounts[id] = Math.max(0, (voteCounts[id]||1) - 1);
+  } else {
+    myVotes[id] = true;
+    voteCounts[id] = (voteCounts[id]||0) + 1;
+  }
+  render();
+  try{
+    if(wasFav){
+      await sbFetch(`favorites?property_id=eq.${encodeURIComponent(id)}&voter=eq.${encodeURIComponent(voterId)}`, { method:"DELETE" });
+    } else {
+      await sbFetch("favorites", { method:"POST", body: JSON.stringify({ property_id:id, voter:voterId }) });
+    }
+  }catch(e){ console.warn("No se pudo guardar el favorito en la nube:", e); }
+}
+
+function toggleDesc(btn){
+  const desc = btn.previousElementSibling;
+  const clamped = desc.classList.toggle("clamped");
+  btn.textContent = clamped ? "Ver más ›" : "Ver menos";
+}
+
+const verdictClass = { "Great Find":"v-great", "Solid Option":"v-solid", "Fair":"v-fair", "Stretch":"v-stretch" };
+function fmtMoney(n){ return "$"+n.toLocaleString("en-US"); }
+
+function cardHtml(p){
+  const ppm = Math.round(p.price / p.size_m2);
+  const isFav = !!myVotes[p.id];
+  const count = voteCounts[p.id] || 0;
+  const mapLink = `https://www.google.com/maps/search/${encodeURIComponent(p.building+" "+p.area+" Panama")}`;
+  return `
+  <div class="card">
+    <div class="thumb" style="background-image:url('${p.thumbnail}')">
+      <span class="verdict-tag ${verdictClass[p.verdict]||''}">${p.verdict}</span>
+      <button class="fav-btn ${isFav?'on':''}" onclick="toggleFav('${p.id}')" title="Marcar como favorito">${isFav?'♥':'♡'}${count?` ${count}`:''}</button>
+      <span class="source-tag">${p.source}</span>
+      ${p.photos && p.photos.length > 1 ? `<button class="photos-btn" onclick="openGallery('${p.id}')" title="Ver más fotos">📷 Ver más fotos (${p.photos.length})</button>` : ""}
+    </div>
+    <div class="card-body">
+      <h3>${p.building}</h3>
+      <div class="area">${p.area} · <a href="${mapLink}" target="_blank" rel="noopener">ver mapa</a></div>
+      <div class="price">${fmtMoney(p.price)}<span class="ppm">$${ppm.toLocaleString("en-US")}/m²</span></div>
+      <div class="facts">
+        <span><b>${p.beds}</b> hab</span>
+        <span><b>${p.baths}</b> baños</span>
+        <span><b>${p.parking ?? 'Consultar'}</b> parqueos</span>
+        <span><b>${p.size_m2}</b> m²</span>
+      </div>
+      <div>
+        <p class="desc clamped">${p.description}</p>
+        <button class="desc-toggle" onclick="toggleDesc(this)">Ver más ›</button>
+      </div>
+      ${p.socialAreas ? `
+      <div class="social">
+        <b>Área social</b>
+        ${p.socialAreas}
+      </div>` : ""}
+      ${p.considerations && p.considerations.length ? `
+      <div class="considerations">
+        <b>A tener en cuenta</b>
+        <ul>${p.considerations.map(c=>`<li>${c}</li>`).join("")}</ul>
+      </div>` : ""}
+      ${p.maintenance ? `<div class="maint">Mantenimiento: $${p.maintenance}/mes</div>` : ""}
+      <div class="card-foot">
+        <span class="ref-badge">Ref: ${p.id.replace(CLIENT_PREFIX,"")}</span>
+        <span class="updated">verificado ${p.lastVerified}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function populateSelectOptions(){
+  const areas = [...new Set(PROPERTIES.map(p=>p.area))].sort((a,b)=>ZONE_ORDER.indexOf(a)-ZONE_ORDER.indexOf(b));
+  const areaSel = document.getElementById("f-area");
+  areas.forEach(a=>{
+    const opt = document.createElement("option");
+    opt.value = a; opt.textContent = a;
+    areaSel.appendChild(opt);
+  });
+  const buildings = [...new Set(PROPERTIES.map(p=>p.building))].sort();
+  const buildSel = document.getElementById("f-building");
+  buildings.forEach(b=>{
+    const opt = document.createElement("option");
+    opt.value = b; opt.textContent = b;
+    buildSel.appendChild(opt);
+  });
+}
+
+function currentFilters(){
+  return {
+    search: document.getElementById("f-search").value.trim().toLowerCase(),
+    area: document.getElementById("f-area").value,
+    price: document.getElementById("f-price").value,
+    beds: document.getElementById("f-beds").value,
+    verdict: document.getElementById("f-verdict").value,
+    building: document.getElementById("f-building").value,
+    show: document.getElementById("f-show").value,
+    sort: document.getElementById("f-sort").value
+  };
+}
+
+function sortList(list, sort){
+  if(sort === "price-asc") list.sort((a,b)=>a.price-b.price);
+  else if(sort === "price-desc") list.sort((a,b)=>b.price-a.price);
+  else if(sort === "size-desc") list.sort((a,b)=>b.size_m2-a.size_m2);
+  else if(sort === "name-asc") list.sort((a,b)=>a.building.localeCompare(b.building));
+  return list;
+}
+
+function render(){
+  const f = currentFilters();
+  let list = PROPERTIES.filter(p=>{
+    if(f.search){
+      const hay = (p.building+" "+p.area+" "+p.description).toLowerCase();
+      if(!hay.includes(f.search)) return false;
+    }
+    if(f.area && p.area !== f.area) return false;
+    if(f.building && p.building !== f.building) return false;
+    if(f.verdict && p.verdict !== f.verdict) return false;
+    if(f.beds){
+      if(p.beds < Number(f.beds)) return false;
+    }
+    if(f.price){
+      const [lo,hi] = f.price.split("-").map(Number);
+      if(p.price<lo || p.price>hi) return false;
+    }
+    if(f.show === "loved" && !(voteCounts[p.id] > 0)) return false;
+    return true;
+  });
+
+  const zonesEl = document.getElementById("zones");
+  const empty = document.getElementById("empty");
+
+  const zonesToShow = f.area ? [f.area] : ZONE_ORDER;
+  let html = "";
+  let shownCount = 0;
+  zonesToShow.forEach(zone=>{
+    const zoneList = sortList(list.filter(p=>p.area===zone), f.sort);
+    if(zoneList.length === 0) return;
+    shownCount += zoneList.length;
+    html += `
+      <div class="zone-block">
+        <div class="sec-head"><h2>${zone}</h2><span class="meta">${zoneList.length} propiedad${zoneList.length===1?"":"es"}</span><div class="rule"></div></div>
+        <div class="grid">${zoneList.map(cardHtml).join("")}</div>
+      </div>`;
+  });
+
+  zonesEl.innerHTML = html;
+  empty.hidden = shownCount>0;
+
+  const favCount = Object.values(voteCounts).filter(c=>c>0).length;
+  document.getElementById("stats").innerHTML = `
+    <div class="stat"><div class="n">${PROPERTIES.length}</div><div class="l">PROPIEDADES</div></div>
+    <div class="stat"><div class="n">${favCount}</div><div class="l">❤ CON FAVORITOS</div></div>
+  `;
+}
+
+document.querySelectorAll("#f-search,#f-area,#f-price,#f-beds,#f-verdict,#f-building,#f-show,#f-sort").forEach(el=>{
+  el.addEventListener(el.tagName==="INPUT" ? "input" : "change", render);
+});
+document.getElementById("clear").addEventListener("click", ()=>{
+  document.getElementById("f-search").value="";
+  document.getElementById("f-area").value="";
+  document.getElementById("f-price").value="";
+  document.getElementById("f-beds").value="";
+  document.getElementById("f-verdict").value="";
+  document.getElementById("f-building").value="";
+  document.getElementById("f-show").value="all";
+  document.getElementById("f-sort").value="price-asc";
+  render();
+});
+
+
+let galleryPhotos = [];
+let galleryIndex = 0;
+function openGallery(id){
+  const p = PROPERTIES.find(x=>x.id===id);
+  if(!p || !p.photos || !p.photos.length) return;
+  galleryPhotos = p.photos;
+  galleryIndex = 0;
+  document.getElementById("lightbox-title").textContent = p.building;
+  showPhoto();
+  document.getElementById("lightbox").hidden = false;
+  document.body.style.overflow = "hidden";
+}
+function closeGallery(){
+  document.getElementById("lightbox").hidden = true;
+  document.body.style.overflow = "";
+}
+function showPhoto(){
+  document.getElementById("lightbox-img").src = galleryPhotos[galleryIndex];
+  document.getElementById("lightbox-counter").textContent = (galleryIndex+1)+" / "+galleryPhotos.length;
+}
+function nextPhoto(){ galleryIndex = (galleryIndex+1) % galleryPhotos.length; showPhoto(); }
+function prevPhoto(){ galleryIndex = (galleryIndex-1+galleryPhotos.length) % galleryPhotos.length; showPhoto(); }
+document.addEventListener("keydown", e=>{
+  const lb = document.getElementById("lightbox");
+  if(lb && !lb.hidden){
+    if(e.key==="Escape") closeGallery();
+    if(e.key==="ArrowRight") nextPhoto();
+    if(e.key==="ArrowLeft") prevPhoto();
+  }
+});
+document.addEventListener("click", e=>{
+  if(e.target && e.target.id === "lightbox") closeGallery();
+});
+
+(async function init(){
+  populateSelectOptions();
+  await loadFavorites();
+  render();
+})();
+</script>
+
+<div class="lightbox" id="lightbox" hidden>
+  <div class="lightbox-inner">
+    <div class="lightbox-imgwrap">
+      <button class="lightbox-close" onclick="closeGallery()" title="Cerrar" aria-label="Cerrar">✕</button>
+      <img id="lightbox-img" src="" alt="Foto de la propiedad">
+    </div>
+    <div class="lightbox-navrow">
+      <button class="lightbox-nav" onclick="prevPhoto()" title="Anterior" aria-label="Foto anterior">‹</button>
+      <div class="lightbox-meta"><b id="lightbox-title"></b><br><span id="lightbox-counter"></span></div>
+      <button class="lightbox-nav" onclick="nextPhoto()" title="Siguiente" aria-label="Foto siguiente">›</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
